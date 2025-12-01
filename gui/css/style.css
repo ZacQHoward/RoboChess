@@ -1,0 +1,28 @@
+div#boardContainer{
+    display: grid;
+    gap: 1px;
+    padding: 10px;
+    background-color: black;
+}
+div#rowContainer{
+    display: grid;
+    gap: 1px;
+    background-color: black;
+}
+span.board-light{
+    display: inline-block;
+    text-align: left;
+    background-color: white;
+    border: 1px solid black;
+    width: 100px;
+    height: 100px;
+}
+span.board-dark{
+    display: inline-block;
+    text-align: left;
+    color: white;
+    background-color: darkgreen;
+    border: 1px solid black;
+    width: 100px;
+    height: 100px;
+}
