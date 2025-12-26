@@ -6,5 +6,6 @@ set(CMAKE_CXX_STANDARD_REQUIRED YES)
 set(CMAKE_CXX_EXTENSIONS        OFF)
 
 add_executable(${PROJECT_NAME}
-    src/gui.cpp
+    src/main.cpp
+    src/states.cpp
 )
