@@ -52,6 +52,15 @@ for (rowCount; rowCount<rowMax; rowCount++){
         rowContainer.appendChild(span); 
     }
     LoD = LoD ? false : true;
+} 
+function startGame(){
+    const socket = new WebSocket('ws://localhost:8080/getBoard');
+    socket.onopen = function(e){
+        console.log("Connection Established");  
+        socket.send(resetBoard());
+    };
+    socket.close;
+    console.log("Socket Closed");
 }
 
 function resetBoard() {
@@ -89,10 +98,17 @@ function resetBoard() {
         "BGPawn": ['G7', "images/bP.svg"],
         "BHPawn": ['H7', "images/bP.svg"],
     };
-    for (const entry of Object.entries(startingPositions)) {
+    setScreenBoard(JSON.stringify(startingPositions));
+    return JSON.stringify(startingPositions);
+}
+
+function setScreenBoard(params){
+    const positions = JSON.parse(params);
+    for (const entry of Object.entries(positions)) {
         const img =document.createElement('img');
         img.setAttribute('src', entry[1][1]);
         img.setAttribute('class', "piece");
         document.getElementById(entry[1][0]).appendChild(img);
     }
 }
+
