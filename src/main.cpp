@@ -3,8 +3,22 @@
 #include <functional>
 
 #include "states.h"
+#include "fen_parser.h"
+
+// Test FEN string representing a specific chess position (mate in one for white, black to move)
+const std::string FEN_STRING = "K5k1/8/8/8/8/8/6R1/5Q2 b - - 0 1";
 
 int main() {
+
+    FENParts fenParts = splitFEN(FEN_STRING);
+    std::cout << "Board: " << fenParts.board << "\n";
+    std::cout << "Active color: " << fenParts.activeColor << "\n";
+    std::cout << "Castling: " << fenParts.castling << "\n";
+    std::cout << "En passant: " << fenParts.enPassant << "\n";
+    std::cout << "Halfmove clock: " << fenParts.halfmoveClock << "\n";
+    std::cout << "Fullmove number: " << fenParts.fullmoveNumber << "\n";
+
+    writeJSON(mapPieces(fenParts.board), "board_state.json");
 
     std::unordered_map<State, std::function<State()>> handlers = {
         { State::INIT, handle_init },

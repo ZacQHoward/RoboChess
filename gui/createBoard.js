@@ -89,6 +89,7 @@ function resetBoard() {
         "BGPawn": ['G7', "images/bP.svg"],
         "BHPawn": ['H7', "images/bP.svg"],
     };
+
     for (const entry of Object.entries(startingPositions)) {
         const img =document.createElement('img');
         img.setAttribute('src', entry[1][1]);

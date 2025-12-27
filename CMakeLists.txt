@@ -8,4 +8,12 @@ set(CMAKE_CXX_EXTENSIONS        OFF)
 add_executable(${PROJECT_NAME}
     src/main.cpp
     src/states.cpp
+    src/fen_parser.cpp
 )
+
+target_include_directories(${PROJECT_NAME} PRIVATE
+    ${PROJECT_SOURCE_DIR}/include
+)
+
+add_compile_definitions(GUI_PATH="${PROJECT_SOURCE_DIR}/gui")
+
