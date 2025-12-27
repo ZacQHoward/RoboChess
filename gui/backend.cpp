@@ -81,6 +81,66 @@ int main() {
             "Sec-WebSocket-Accept: " + test + "\r\n"
             "\r\n";
         send(socket, header.c_str(), header.length(), 0);
+        //This gives time for the request to come in and should be improved
+        //TODO: Fix
+        sleep(1);
+
+        char JSONbuffer[2048] = {0};
+        read(socket, JSONbuffer, 2048);
+        
+        // Decode WebSocket frame
+        unsigned char* frame = (unsigned char*)JSONbuffer;
+        int payloadLen = frame[1] & 0x7F; // Remove mask bit
+        int maskStart = 2;
+        
+        // Handle extended payload lengths
+        if (payloadLen == 126) {
+            payloadLen = (frame[2] << 8) | frame[3];
+            maskStart = 4;
+        } else if (payloadLen == 127) {
+            maskStart = 10; // 8 bytes for length + 2 header bytes
+        }
+        
+        // Extract masking key (4 bytes after length)
+        unsigned char mask[4];
+        for (int i = 0; i < 4; i++) {
+            mask[i] = frame[maskStart + i];
+        }
+        
+        // Unmask payload
+        int payloadStart = maskStart + 4;
+        char decodedJSON[2048] = {0};
+        for (int i = 0; i < payloadLen; i++) {
+            decodedJSON[i] = frame[payloadStart + i] ^ mask[i % 4];
+        }
+        
+        std::cout << decodedJSON << std::endl;
+        //TESTING TODO: Remove
+        std::string testResponse = R"({"WRRook":["A1","images/wR.svg"],"WRKnight":["B1","images/wN.svg"],"WRBishop":["C1","images/wB.svg"],"WQueen":["D1","images/wQ.svg"],"WKing":["E1","images/wK.svg"],"WLBishop":["F1","images/wB.svg"],"WLKnight":["G1","images/wN.svg"],"WLRook":["H1","images/wR.svg"],"WAPawn":["A2","images/wP.svg"],"WBPawn":["B2","images/wP.svg"],"WCPawn":["C2","images/wP.svg"],"WDPawn":["D2","images/wP.svg"],"WEPawn":["E2","images/wP.svg"],"WFPawn":["F2","images/wP.svg"],"WGPawn":["G2","images/wP.svg"],"WHPawn":["H2","images/wP.svg"],"BRRook":["A8","images/bR.svg"],"BRKnight":["B8","images/bN.svg"],"BRBishop":["C8","images/bB.svg"],"BQueen":["D8","images/bQ.svg"],"BKing":["E8","images/bK.svg"],"BLBishop":["F8","images/bB.svg"],"BLKnight":["G8","images/bN.svg"],"BLRook":["H8","images/bR.svg"],"BAPawn":["A7","images/bP.svg"],"BBPawn":["B7","images/bP.svg"],"BCPawn":["C7","images/bP.svg"],"BDPawn":["D7","images/bP.svg"],"BEPawn":["E7","images/bP.svg"],"BFPawn":["F7","images/bP.svg"],"BGPawn":["G7","images/bP.svg"],"BHPawn":["H6","images/bP.svg"]})";
+        
+        // Frame the response for WebSocket
+        int responseLen = testResponse.length();
+        unsigned char responseFrame[2048];
+        int frameSize = 0;
+        
+        // Byte 0: FIN bit (1) + opcode (1 = text frame)
+        responseFrame[frameSize++] = 0x81;
+        
+        // Byte 1: Mask bit (0 for server->client) + payload length
+        if (responseLen < 126) {
+            responseFrame[frameSize++] = responseLen;
+        } else if (responseLen < 65536) {
+            responseFrame[frameSize++] = 126;
+            responseFrame[frameSize++] = (responseLen >> 8) & 0xFF;
+            responseFrame[frameSize++] = responseLen & 0xFF;
+        }
+        
+        // Copy payload
+        memcpy(responseFrame + frameSize, testResponse.c_str(), responseLen);
+        frameSize += responseLen;
+        
+        send(socket, responseFrame, frameSize, 0);
+        sleep(10);
     }
     close(socket);
     close(server);

@@ -59,8 +59,12 @@ function startGame(){
         console.log("Connection Established");  
         socket.send(resetBoard());
     };
-    socket.close;
-    console.log("Socket Closed");
+    socket.onmessage = function(e){
+        console.log("message received");
+        setScreenBoard(e.data);
+        socket.close;
+        console.log("Socket Closed");
+    }
 }
 
 function resetBoard() {
@@ -96,7 +100,7 @@ function resetBoard() {
         "BEPawn": ['E7', "images/bP.svg"],
         "BFPawn": ['F7', "images/bP.svg"],
         "BGPawn": ['G7', "images/bP.svg"],
-        "BHPawn": ['H7', "images/bP.svg"],
+        "BHPawn": ['H5', "images/bP.svg"],
     };
     setScreenBoard(JSON.stringify(startingPositions));
     return JSON.stringify(startingPositions);
@@ -104,6 +108,8 @@ function resetBoard() {
 
 function setScreenBoard(params){
     const positions = JSON.parse(params);
+    const reset = document.querySelectorAll('.piece');
+    reset.forEach(img => img.remove());
     for (const entry of Object.entries(positions)) {
         const img =document.createElement('img');
         img.setAttribute('src', entry[1][1]);

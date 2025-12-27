@@ -4,12 +4,6 @@ div#boardContainer{
     padding: 10px;
     background-color: black;
 }
-div#rowContainer{
-    display: grid;
-    gap: 1px;
-    background-color: black;
-    height: 106px;
-}
 span.board-light{
     display: inline-block;
     text-align: left;
@@ -27,12 +21,20 @@ span.board-dark{
     width: 106px;
     height: 106px;
 }
-img{
-    display: inline;
+img.piece{
+    display: block;
     border: 0px;
     margin: 0;
     margin-top: -22.5px;
     padding: 0;
     width: 100px;
     height: 100px;
+}
+div[id^="rowContainer"]{
+    display: grid;
+    grid-template-columns: repeat(8, 106px);   
+    gap: 1px;
+    background-color: black;
+    height: 108px;
+    max-height: 108px;
 }
