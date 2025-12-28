@@ -52,6 +52,19 @@ for (rowCount; rowCount<rowMax; rowCount++){
         rowContainer.appendChild(span); 
     }
     LoD = LoD ? false : true;
+} 
+function startGame(){
+    const socket = new WebSocket('ws://localhost:8080/getBoard');
+    socket.onopen = function(e){
+        console.log("Connection Established");  
+        socket.send(resetBoard());
+    };
+    socket.onmessage = function(e){
+        console.log("message received");
+        setScreenBoard(e.data);
+        socket.close;
+        console.log("Socket Closed");
+    }
 }
 
 function resetBoard() {
@@ -87,13 +100,21 @@ function resetBoard() {
         "BEPawn": ['E7', "images/bP.svg"],
         "BFPawn": ['F7', "images/bP.svg"],
         "BGPawn": ['G7', "images/bP.svg"],
-        "BHPawn": ['H7', "images/bP.svg"],
+        "BHPawn": ['H5', "images/bP.svg"],
     };
+    setScreenBoard(JSON.stringify(startingPositions));
+    return JSON.stringify(startingPositions);
+}
 
-    for (const entry of Object.entries(startingPositions)) {
+function setScreenBoard(params){
+    const positions = JSON.parse(params);
+    const reset = document.querySelectorAll('.piece');
+    reset.forEach(img => img.remove());
+    for (const entry of Object.entries(positions)) {
         const img =document.createElement('img');
         img.setAttribute('src', entry[1][1]);
         img.setAttribute('class', "piece");
         document.getElementById(entry[1][0]).appendChild(img);
     }
 }
+
